@@ -68,16 +68,23 @@ def get_point_in_feature_space(filename, plot=False, feature_space_dimension=3, 
     return frequency_peaks
 
 
-def get_points_in_feature_space(folder_with_sound_samples, plot=False):
+def get_points_in_feature_space(folder_with_sound_samples):
     files = [f for f in listdir(folder_with_sound_samples) if isfile(join(folder_with_sound_samples, f))]
-    points = []
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
+    points = {}
     for file in files:
         point = get_point_in_feature_space(folder_with_sound_samples+'/'+file)
-        points.append(point)
-        if plot:
-            ax.scatter(point[0], point[1], point[2], color=colors[file[3:5]])
-    if plot:
-        plt.show()
+        vowel = file[3:5]
+        if vowel in points.keys():
+            points[vowel].append(point)
+        else:
+            points[vowel] = [point]
     return points
+
+
+def plot_points(points_dict):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    for vowel, points in points_dict.items():
+        for point in points:
+            ax.scatter(point[0], point[1], point[2], color=colors[vowel])
+    plt.show()
