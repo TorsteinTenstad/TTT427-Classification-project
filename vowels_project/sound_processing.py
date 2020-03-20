@@ -19,7 +19,6 @@ colors = {"ae": "black",
           "uw": "mediumblue"}
 
 
-
 def get_sound_signal(filename):
     fs, data = scipy.io.wavfile.read(filename)
     return np.array(data, dtype=float)
