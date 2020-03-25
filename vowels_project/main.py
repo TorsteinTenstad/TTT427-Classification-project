@@ -41,13 +41,13 @@ class Vowel:
         self.mean = 0
         self.covariance = []
 
-    def calc_mean(self):
-        self.mean = np.average(self.data, axis=0)
+    def calc_mean(self, mode):  # modes: 0-steady state, 1-20% duration, 2-50%duration, 3-80% duration
+        self.mean = np.average(self.get_points(mode), axis=0)
 
-    def calc_covariance_matrix(self):
-        self.covariance = np.cov(np.transpose(self.data))
+    def calc_covariance_matrix(self, mode):
+        self.covariance = np.cov(np.transpose(self.get_points(mode)))
 
-    def get_points(self, mode):  # modes: 0-steady state, 1-20% duration, 2-50%duration, 3-80% duration
+    def get_points(self, mode):
         start = 3 + 3 * mode + int(mode != 0)
         return [sample[start:start + 3] for sample in self.data]
 
