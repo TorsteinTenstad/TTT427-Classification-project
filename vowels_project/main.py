@@ -17,7 +17,6 @@
 # Note: An entry of zero means that the formant was not measurable.
 from Dataset import Dataset
 import sound_processing
-import global_constants
 
 
 def get_raw_data_from_dat_file(file):
@@ -36,16 +35,12 @@ def main():
     #raw_data = get_raw_data_from_wav_analysis('samples')
     training_set = Dataset(raw_data, samples_to_take_for_each_group={'m': 25, 'w': 25, 'b': 15, 'g': 11})
     testing_set = Dataset(raw_data)
-    confusion_matrix = training_set.classify_test_set(testing_set)
-    sum = 0
-    correct = 0
-    for i in global_constants.vowel_types:
-        for j in global_constants.vowel_types:
-            x = confusion_matrix[i][j]
-            sum += x
-            if i == j:
-                correct += x
-    print('Correct classification rate:', int(100*correct/sum), '%')
+    training_set.calc_all()
+    false_classification_rate, confusion_matrix = training_set.classify_test_set(testing_set)
+    print('False classification rate:', int(100 * false_classification_rate), '%')
+    training_set.make_all_covariance_matrices_diagonal()
+    false_classification_rate, confusion_matrix = training_set.classify_test_set(testing_set)
+    print('False classification rate with diagonal covariance matrices:', int(100 * false_classification_rate), '%')
 
 
 main()

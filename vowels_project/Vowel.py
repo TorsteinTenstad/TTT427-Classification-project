@@ -16,6 +16,13 @@ class Vowel:
     def calc_covariance_matrix(self):
         self.covariance = np.cov(np.transpose(self.samples))
 
+    def make_covariance_matrix_diagonal(self):
+        l = len(self.covariance)
+        for i in range(l):
+            for j in range(l):
+                if i != j:
+                    self.covariance[i][j] = 0
+
     def add_point(self, point):
         self.samples.append(point)
 

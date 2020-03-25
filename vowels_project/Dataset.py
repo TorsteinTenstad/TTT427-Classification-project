@@ -29,6 +29,15 @@ class Dataset:
     def get_vowel_dict(self):
         return self.vowels
 
+    def calc_all(self):
+        for vowel in self.vowels.values():
+            vowel.calc_covariance_matrix()
+            vowel.calc_mean()
+
+    def make_all_covariance_matrices_diagonal(self):
+        for vowel in self.vowels.values():
+            vowel.make_covariance_matrix_diagonal()
+
     def classify_point(self, point):
         max_probability = 0
         vowel_type = ''
@@ -42,11 +51,15 @@ class Dataset:
     def classify_test_set(self, test_set):
         test_set_vowel_dict = test_set.get_vowel_dict()
         confusion_matrix = dict(zip(test_set_vowel_dict.keys(), [dict(zip(self.vowels.keys(), np.zeros(len(self.vowels.keys()), dtype=int))) for i in range(len(test_set_vowel_dict.keys()))]))
+        total, correct = 0, 0
         for vowel_type, vowel in test_set_vowel_dict.items():
             samples = vowel.get_samples()
             for sample in samples:
-                confusion_matrix[vowel_type][self.classify_point(sample)] += 1
-        return confusion_matrix
+                classify_result = self.classify_point(sample)
+                confusion_matrix[vowel_type][classify_result] += 1
+                total += 1
+                correct += 1 if classify_result == vowel_type else 0
+        return 1 - correct / total, confusion_matrix
 
     def plot(self):
         fig = plt.figure()
