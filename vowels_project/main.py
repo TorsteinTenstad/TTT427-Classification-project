@@ -17,8 +17,9 @@
 # Note: An entry of zero means that the formant was not measurable.
 
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
+
+vowel_types = ['ae', 'ah', 'aw', 'ae', 'ah', 'aw', 'eh', 'er', 'ei', 'ih', 'iy', 'oa', 'oo', 'uh', 'uw']
 
 colors = {"ae": "black",
           "ah": "dimgrey",
@@ -34,47 +35,52 @@ colors = {"ae": "black",
           "uw": "mediumblue"}
 
 
+class Dataset:
+    def __init__(self, raw_data, take_every_x_sample, mode):  # modes: 0-steady state, 1-20% duration, 2-50%duration, 3-80% duration
+        self.vowels = dict(zip(vowel_types, [Vowel(vowel) for vowel in vowel_types]))
+        for sample in raw_data:
+            if not int(sample[0][1:3]) % take_every_x_sample:
+                start = 3 + 3 * mode + int(mode != 0)
+                self.vowels[sample[0][3:5]].add_point(sample[start:start + 3])
+
+    def plot(self):
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        for vowel in self.vowels.values():
+            vowel.plot(ax)
+        plt.show()
+
+
 class Vowel:
-    def __init__(self, type):
-        self.type = type
-        self.data = []
+    def __init__(self, vowel_type):
+        self.type = vowel_type
+        self.points = []
         self.mean = 0
         self.covariance = []
 
-    def calc_mean(self, mode):  # modes: 0-steady state, 1-20% duration, 2-50%duration, 3-80% duration
-        self.mean = np.average(self.get_points(mode), axis=0)
+    def calc_mean(self):
+        self.mean = np.average(self.points, axis=0)
 
-    def calc_covariance_matrix(self, mode):
-        self.covariance = np.cov(np.transpose(self.get_points(mode)))
+    def calc_covariance_matrix(self):
+        self.covariance = np.cov(np.transpose(self.points))
 
-    def get_points(self, mode):
-        start = 3 + 3 * mode + int(mode != 0)
-        return [sample[start:start + 3] for sample in self.data]
+    def add_point(self, point):
+        self.points.append(point)
 
-    def plot(self, ax, mode):
-        points = self.get_points(mode)
-        for point in points:
+    def get_points(self):
+        return self.points
+
+    def plot(self, ax):
+        for point in self.points:
             ax.scatter(point[0], point[1], point[2], color=colors[self.type])
 
 
 def main():
     # Load dataset
-    dataset = [[int(i) if i.isnumeric() else i for i in line.strip().split()] for line in open("samples/vowdata.dat").readlines()][1:]
-
-    # Define dictionary of classes
-    vowels = ['ae', 'ah', 'aw', 'ae', 'ah', 'aw', 'eh', 'er', 'ei', 'ih', 'iy', 'oa', 'oo', 'uh', 'uw']
-    classes = dict(zip(vowels, [Vowel(vowel) for vowel in vowels]))
-
-    # Add data to classes
-    for sample in dataset:
-        classes[sample[0][3:5]].data.append(sample)
-
+    raw_data = [[int(i) if i.isnumeric() else i for i in line.strip().split()] for line in open("samples/vowdata.dat").readlines()][1:]
+    dataset = Dataset(raw_data, 1, 2)
     # Plot feature space
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    for vowel in classes.values():
-        vowel.plot(ax, 2)
-    plt.show()
+    dataset.plot()
 
 
 main()
