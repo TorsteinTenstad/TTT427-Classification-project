@@ -34,8 +34,6 @@ def main():
     # Load dataset
     raw_data = get_raw_data_from_dat_file('samples/vowdata.dat')
     dataset = Dataset(raw_data)
-    # Plot feature space
-    dataset.plot()
 
 
 main()
