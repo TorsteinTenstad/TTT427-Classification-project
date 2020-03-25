@@ -5,19 +5,6 @@ import matplotlib.pyplot as plt
 from os import listdir
 from os.path import isfile, join
 
-colors = {"ae": "black",
-          "ah": "dimgrey",
-          "aw": "silver",
-          "eh": "lightcoral",
-          "ei": "firebrick",
-          "er": "crimson",
-          "ih": "darkorange",
-          "iy": "yellow",
-          "oa": "lime",
-          "oo": "darkgreen",
-          "uh": "cornflowerblue",
-          "uw": "mediumblue"}
-
 
 def get_sound_signal(filename):
     fs, data = scipy.io.wavfile.read(filename)
@@ -67,23 +54,11 @@ def get_point_in_feature_space(filename, plot=False, feature_space_dimension=3, 
     return frequency_peaks
 
 
-def get_points_in_feature_space(folder_with_sound_samples):
+def get_raw_feature_data(folder_with_sound_samples):
     files = [f for f in listdir(folder_with_sound_samples) if isfile(join(folder_with_sound_samples, f))]
-    points = {}
+    points = []
     for file in files:
-        point = get_point_in_feature_space(folder_with_sound_samples+'/'+file)
-        vowel = file[3:5]
-        if vowel in points.keys():
-            points[vowel].append(point)
-        else:
-            points[vowel] = [point]
+        point = list(get_point_in_feature_space(folder_with_sound_samples+'/'+file))
+        point.insert(0, file)
+        points.append(point)
     return points
-
-
-def plot_points(points_dict):
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    for vowel, points in points_dict.items():
-        for point in points:
-            ax.scatter(point[0], point[1], point[2], color=colors[vowel])
-    plt.show()

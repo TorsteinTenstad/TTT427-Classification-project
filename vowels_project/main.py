@@ -16,15 +16,23 @@
 #
 # Note: An entry of zero means that the formant was not measurable.
 from Dataset import Dataset
+import sound_processing
 
 
 def get_raw_data_from_dat_file(file):
     return [[int(i) if i.isnumeric() else i for i in line.strip().split()] for line in open(file).readlines()][1:]
 
 
+def get_raw_data_from_wav_analysis(folder):
+    raw_data = []
+    for subfolder in ['men', 'women', 'kids']:
+        raw_data = raw_data + sound_processing.get_raw_feature_data(folder + '/' + subfolder)
+    return raw_data
+
+
 def main():
     # Load dataset
-    raw_data = get_raw_data_from_dat_file("samples/vowdata.dat")
+    raw_data = get_raw_data_from_dat_file('samples/vowdata.dat')
     dataset = Dataset(raw_data)
     # Plot feature space
     dataset.plot()
