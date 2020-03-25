@@ -36,12 +36,18 @@ colors = {"ae": "black",
 
 
 class Dataset:
-    def __init__(self, raw_data, take_every_x_sample, mode):  # modes: 0-steady state, 1-20% duration, 2-50%duration, 3-80% duration
-        self.vowels = dict(zip(vowel_types, [Vowel(vowel) for vowel in vowel_types]))
+    def __init__(self, raw_data, mode=0, samples_to_take_for_each_group=None):  # modes: 0-steady state, 1-20% duration, 2-50%duration, 3-80% duration
+        if samples_to_take_for_each_group is None:
+            samples_to_take_for_each_group = {'m': 50, 'w': 50, 'b': 29, 'g': 21}
+        self.vowels = dict(zip(vowel_types, [Vowel(vowel) for vowel in vowel_types]))  # dictionary with one Vowel class instance for each vowel type
+        samples_taken = dict(zip(vowel_types, [dict(zip(samples_to_take_for_each_group.keys(), np.zeros(len(samples_to_take_for_each_group.keys())))) for i in range(len(vowel_types))]))
         for sample in raw_data:
-            if not int(sample[0][1:3]) % take_every_x_sample:
+            speaker_type = sample[0][0]  # m=man, w=woman, b=boy, g=girl
+            vowel_type = sample[0][3:5]
+            if speaker_type in samples_to_take_for_each_group.keys() and samples_taken[vowel_type][speaker_type] < samples_to_take_for_each_group[speaker_type]:
+                samples_taken[vowel_type][speaker_type] += 1
                 start = 3 + 3 * mode + int(mode != 0)
-                self.vowels[sample[0][3:5]].add_point(sample[start:start + 3])
+                self.vowels[vowel_type].add_point(sample[start:start + 3])
 
     def plot(self):
         fig = plt.figure()
@@ -78,7 +84,7 @@ class Vowel:
 def main():
     # Load dataset
     raw_data = [[int(i) if i.isnumeric() else i for i in line.strip().split()] for line in open("samples/vowdata.dat").readlines()][1:]
-    dataset = Dataset(raw_data, 1, 2)
+    dataset = Dataset(raw_data)
     # Plot feature space
     dataset.plot()
 
