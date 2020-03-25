@@ -18,6 +18,20 @@
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+
+colors = {"ae": "black",
+          "ah": "dimgrey",
+          "aw": "silver",
+          "eh": "lightcoral",
+          "ei": "firebrick",
+          "er": "crimson",
+          "ih": "darkorange",
+          "iy": "yellow",
+          "oa": "lime",
+          "oo": "darkgreen",
+          "uh": "cornflowerblue",
+          "uw": "mediumblue"}
 
 
 class Vowel:
@@ -28,30 +42,39 @@ class Vowel:
         self.covariance = []
 
     def calc_mean(self):
-        self.mean = np.average(points, axis=0)
+        self.mean = np.average(self.data, axis=0)
 
     def calc_covariance_matrix(self):
         self.covariance = np.cov(np.transpose(self.data))
 
+    def get_points(self, mode):  # modes: 0-steady state, 1-20% duration, 2-50%duration, 3-80% duration
+        start = 3 + 3 * mode + int(mode != 0)
+        return [sample[start:start + 3] for sample in self.data]
+
+    def plot(self, ax, mode):
+        points = self.get_points(mode)
+        for point in points:
+            ax.scatter(point[0], point[1], point[2], color=colors[self.type])
+
 
 def main():
     # Load dataset
-    dataset = pd.read_fwf("samples/vowdata.dat")
-    dataset = dataset.to_numpy()
+    dataset = [[int(i) if i.isnumeric() else i for i in line.strip().split()] for line in open("samples/vowdata.dat").readlines()][1:]
 
-    print(dataset[:][3])
-
-    # Define list of classes
+    # Define dictionary of classes
     vowels = ['ae', 'ah', 'aw', 'ae', 'ah', 'aw', 'eh', 'er', 'ei', 'ih', 'iy', 'oa', 'oo', 'uh', 'uw']
-    classes = [None] * 15
-
-    for i in range(len(vowels)):
-        classes[i] = Vowel(vowels[i])
+    classes = dict(zip(vowels, [Vowel(vowel) for vowel in vowels]))
 
     # Add data to classes
     for sample in dataset:
-        for ele in classes:
-            if sample[0][3:5] == ele.type:
-                ele.data.append(sample)
+        classes[sample[0][3:5]].data.append(sample)
+
+    # Plot feature space
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    for vowel in classes.values():
+        vowel.plot(ax, 2)
+    plt.show()
+
 
 main()
