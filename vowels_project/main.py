@@ -53,6 +53,9 @@ def main():
     # Constrain the classifier to use diagonal covariance matrices:
     training_set.make_all_covariance_matrices_diagonal()
 
+    # Train the classifier with this constraint:
+    training_set.train()
+
     # Classify the testing set with the new classifier:
     false_classification_rate, confusion_matrix = training_set.classify_test_set(testing_set)
 
