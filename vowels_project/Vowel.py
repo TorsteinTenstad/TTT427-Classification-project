@@ -9,12 +9,20 @@ class Vowel:
         self.samples = []
         self.mean = []
         self.covariance = []
+        self.multivariate_normal = None
 
     def calc_mean(self):
         self.mean = np.average(self.samples, axis=0)
 
     def calc_covariance_matrix(self):
         self.covariance = np.cov(np.transpose(self.samples))
+
+    def calc_multivariate_normal(self):
+        if len(self.mean) == 0:
+            self.calc_mean()
+        if len(self.covariance) == 0:
+            self.calc_covariance_matrix()
+        self.multivariate_normal = multivariate_normal(mean=self.mean, cov=self.covariance)
 
     def make_covariance_matrix_diagonal(self):
         l = len(self.covariance)
@@ -36,9 +44,7 @@ class Vowel:
         for point in self.samples:
             ax.scatter(point[0], point[1], point[2], color=global_constants.colors[self.vowel_type])
 
-    def calc_probability(self, point):  # calculate the value of the pdf given by the mean and covariance at a point
-        if len(self.mean) == 0:
-            self.calc_mean()
-        if len(self.covariance) == 0:
-            self.calc_covariance_matrix()
-        return multivariate_normal(mean=self.mean, cov=self.covariance).pdf(point)
+    def calc_probability(self, point):
+        if self.multivariate_normal is None:
+            self.calc_multivariate_normal()
+        return self.multivariate_normal.pdf(point)

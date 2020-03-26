@@ -33,6 +33,7 @@ class Dataset:
         for vowel in self.vowels.values():
             vowel.calc_covariance_matrix()
             vowel.calc_mean()
+            vowel.calc_multivariate_normal()
 
     def make_all_covariance_matrices_diagonal(self):
         for vowel in self.vowels.values():
