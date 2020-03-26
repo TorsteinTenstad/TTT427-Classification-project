@@ -25,9 +25,9 @@ class Vowel:
         self.multivariate_normal = multivariate_normal(mean=self.mean, cov=self.covariance)
 
     def make_covariance_matrix_diagonal(self):
-        l = len(self.covariance)
-        for i in range(l):
-            for j in range(l):
+        n = len(self.covariance)
+        for i in range(n):
+            for j in range(n):
                 if i != j:
                     self.covariance[i][j] = 0
 
