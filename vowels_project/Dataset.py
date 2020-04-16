@@ -5,8 +5,8 @@ import global_constants
 
 
 class Dataset:
-    def __init__(self, raw_data, mode=0, samples_to_take_for_each_group=None):  # modes: 0-steady state, 1-20% duration, 2-50%duration, 3-80% duration
-        self.vowels = dict(zip(global_constants.vowel_types, [Vowel(vowel) for vowel in global_constants.vowel_types]))  # dictionary with one Vowel class instance for each vowel type
+    def __init__(self, raw_data, mode=0, samples_to_take_for_each_group=None, n_components=1, covariance_type='full'):  # modes: 0-steady state, 1-20% duration, 2-50%duration, 3-80% duration
+        self.vowels = dict(zip(global_constants.vowel_types, [Vowel(vowel, n_components, covariance_type=covariance_type) for vowel in global_constants.vowel_types]))  # dictionary with one Vowel class instance for each vowel type
 
         mode = -1 if len(raw_data[0]) == 4 else mode  # if raw_data is from .wav analysis there is only one set of points to choose
         start_col = 3 + 3 * mode + int(mode != 0) if mode >= 0 else 1  # determine what columns to retrieve frequency data from based on mode choice
@@ -31,19 +31,16 @@ class Dataset:
 
     def train(self):  # based on the samples in the dataset, fit a gaussian probability distribution
         for vowel in self.vowels.values():
-            vowel.calc_multivariate_normal()
-
-    def make_all_covariance_matrices_diagonal(self):
-        for vowel in self.vowels.values():
-            vowel.make_covariance_matrix_diagonal()
+            vowel.samples = np.array(vowel.samples)
+            vowel.fit_gmm()
 
     def classify_point(self, point):  # for every vowel in the dataset, check the probability that the point is from the vowels distribution. The result is the vowel with the highest probability
-        max_probability = 0
+        max_score = -1000
         vowel_type = ''
         for vowel in self.vowels.values():
-            probability = vowel.calc_probability(point)
-            if probability > max_probability:
-                max_probability = probability
+            score = vowel.score(point)
+            if score > max_score:
+                max_score = score
                 vowel_type = vowel.get_type()
         return vowel_type
 
