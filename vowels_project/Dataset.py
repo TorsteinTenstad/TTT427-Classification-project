@@ -46,13 +46,14 @@ class Dataset:
 
     def classify_test_set(self, test_set):  # classify all points in the test set using the classify_point method
         test_set_vowel_dict = test_set.get_vowel_dict()
-        confusion_matrix = dict(zip(test_set_vowel_dict.keys(), [dict(zip(self.vowels.keys(), np.zeros(len(self.vowels.keys()), dtype=int))) for i in range(len(test_set_vowel_dict.keys()))]))
+        confusion_matrix = np.zeros((len(global_constants.vowel_types), len(global_constants.vowel_types)), dtype=int)
+        vowel_type_to_index = dict(zip(global_constants.vowel_types, np.arange(len(global_constants.vowel_types))))
         total, correct = 0, 0
         for vowel_type, vowel in test_set_vowel_dict.items():  # for all vowel types in the test set
             samples = vowel.get_samples()  # get the samples
             for sample in samples:  # for all samples
                 classify_result = self.classify_point(sample)  # classify the sample
-                confusion_matrix[vowel_type][classify_result] += 1  # increment the appropriate  cell in the confusion matrix
+                confusion_matrix[vowel_type_to_index[classify_result]][vowel_type_to_index[vowel_type]] += 1  # increment the appropriate  cell in the confusion matrix
                 total += 1
                 correct += 1 if classify_result == vowel_type else 0
         return 1 - correct / total, confusion_matrix

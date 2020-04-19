@@ -17,6 +17,8 @@
 # Note: An entry of zero means that the formant was not measurable.
 from Dataset import Dataset
 import sound_processing
+import confusion_matrix_to_latex_table
+import global_constants
 
 
 def get_raw_data_from_dat_file(file):
@@ -49,6 +51,10 @@ def main():
 
     # Print results:
     print('False classification rate:', int(100 * false_classification_rate), '%')
+    print('Confusion matrix:\n', confusion_matrix)
+
+    # Format confusion matrix for latex:
+    confusion_matrix_to_latex_table.to_latex_table(confusion_matrix, global_constants.vowel_types, 'confusion_matrix.txt')
 
 
 main()
