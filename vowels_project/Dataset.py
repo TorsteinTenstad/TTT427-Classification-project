@@ -5,16 +5,12 @@ import global_constants
 
 
 class Dataset:
-    def __init__(self, raw_data, mode=0, samples_to_take_for_each_group=None, n_components=1, covariance_type='full'):  # modes: 0-steady state, 1-20% duration, 2-50%duration, 3-80% duration
+    def __init__(self, raw_data, samples_to_take_for_each_group=None, n_components=1, covariance_type='full'):
         self.vowels = dict(zip(global_constants.vowel_types, [Vowel(vowel, n_components, covariance_type=covariance_type) for vowel in global_constants.vowel_types]))  # dictionary with one Vowel class instance for each vowel type
-
-        mode = -1 if len(raw_data[0]) == 4 else mode  # if raw_data is from .wav analysis there is only one set of points to choose
-        start_col = 3 + 3 * mode + int(mode != 0) if mode >= 0 else 1  # determine what columns to retrieve frequency data from based on mode choice
-
         if samples_to_take_for_each_group is None:  # if the amount samples to take is unspecified, take all samples from the raw data
             for sample in reversed(raw_data):
                 vowel_type = sample[0][3:5]
-                self.vowels[vowel_type].add_point(sample[start_col:start_col + 3])
+                self.vowels[vowel_type].add_point(sample[1])
                 raw_data.remove(sample)
         else:  # if the amount of samples to take is specified, take the specified amount
             samples_taken = dict(zip(global_constants.vowel_types, [dict(zip(samples_to_take_for_each_group.keys(), np.zeros(len(samples_to_take_for_each_group.keys())))) for i in range(len(global_constants.vowel_types))]))
@@ -23,7 +19,7 @@ class Dataset:
                 vowel_type = sample[0][3:5]
                 if speaker_type in samples_to_take_for_each_group.keys() and samples_taken[vowel_type][speaker_type] < samples_to_take_for_each_group[speaker_type]:
                     samples_taken[vowel_type][speaker_type] += 1
-                    self.vowels[vowel_type].add_point(sample[start_col:start_col + 3])
+                    self.vowels[vowel_type].add_point(sample[1])
                     raw_data.remove(sample)
 
     def get_vowel_dict(self):
@@ -35,7 +31,7 @@ class Dataset:
             vowel.fit_gmm()
 
     def classify_point(self, point):  # for every vowel in the dataset, check the probability that the point is from the vowels distribution. The result is the vowel with the highest probability
-        max_score = -1000
+        max_score = -1000000000000
         vowel_type = ''
         for vowel in self.vowels.values():
             score = vowel.score(point)
