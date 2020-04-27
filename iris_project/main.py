@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from test_and_train_classifier import *
-from plot_histogram import plot_histogram
+from plot_histogram import *
 
 plt.style.use('seaborn-whitegrid')
 
@@ -125,6 +125,8 @@ def main():
 
     print("======  task2  ======")
     task2()
+
+    plot_histogram_and_scatter()
 
 
 main()

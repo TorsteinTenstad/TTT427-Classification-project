@@ -1,5 +1,19 @@
 import numpy as np
 from matplotlib import pyplot as plt
+import pandas as pd
+import seaborn as sns
+
+def plot_histogram_and_scatter():
+    # Load data from csv-file
+    data = pd.read_csv("Data/iris.data", delimiter=',')
+
+    pal = ["#1985a1", "#65b891", "#84bcda"]
+
+    g = sns.pairplot(data, hue="Species", palette=sns.color_palette(pal))
+    #g.map_offdiag(sns.kdeplot, n_levels=5)
+    g.map_diag(sns.distplot)
+
+    plt.show()
 
 def plot_histogram():
     # Load data from csv-file

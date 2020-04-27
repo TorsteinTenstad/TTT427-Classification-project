@@ -62,5 +62,6 @@ def main():
     # Print results:
     print('False classification rate with diagonal covariance matrices:', int(100 * false_classification_rate), '%')
 
+    training_set.plot_gaussian()
 
 main()

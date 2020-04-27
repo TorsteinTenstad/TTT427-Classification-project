@@ -2,7 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from Vowel import Vowel
 import global_constants
-
+from mpl_toolkits.mplot3d import Axes3D
+import seaborn as sns
 
 class Dataset:
     def __init__(self, raw_data, mode=0, samples_to_take_for_each_group=None):  # modes: 0-steady state, 1-20% duration, 2-50%duration, 3-80% duration
@@ -63,6 +64,45 @@ class Dataset:
     def plot(self):
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
+
         for vowel in self.vowels.values():
             vowel.plot(ax)
+
+        plt.show()
+
+    def plot_gaussian(self):
+        fig = plt.figure()
+
+        xy = fig.add_subplot(231)
+        xz = fig.add_subplot(232)
+        yz = fig.add_subplot(233)
+
+        ax = fig.add_subplot(234)
+        ay = fig.add_subplot(235)
+        az = fig.add_subplot(236)
+
+        for vowel in self.vowels.values():
+            vowel.plotGaussian(xy, xz, yz, ax, ay, az)
+
+        xy.title.set_text('F1 compared to F2')
+        xy.set_xlabel('F1')
+        xy.set_ylabel('F2')
+
+        xz.title.set_text('F1 compared to F3')
+        xz.set_xlabel('F1')
+        xz.set_ylabel('F3')
+
+        yz.title.set_text('F2 compared to F3')
+        yz.set_xlabel('F2')
+        yz.set_ylabel('F3')
+
+        ax.title.set_text('Gaussian KDE F1')
+        ax.set_xlabel('F1')
+
+        ay.title.set_text('Gaussian KDE F2')
+        ay.set_xlabel('F2')
+
+        az.title.set_text('Gaussian KDE F3')
+        az.set_xlabel('F3')
+
         plt.show()

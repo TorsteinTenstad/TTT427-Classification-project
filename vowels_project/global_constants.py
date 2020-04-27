@@ -1,3 +1,5 @@
+import numpy as np
+
 vowel_types = ['ae', 'ah', 'aw', 'ae', 'ah', 'aw', 'eh', 'er', 'ei', 'ih', 'iy', 'oa', 'oo', 'uh', 'uw']
 
 colors = {"ae": "black",

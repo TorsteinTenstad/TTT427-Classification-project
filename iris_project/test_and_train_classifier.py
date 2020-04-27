@@ -43,7 +43,7 @@ def train_weight_matrix(num_testruns, alpha, t1, t2, t3):
         W = W - alpha * grad_MSE.T
 
         if n % 2500 == 0:
-            print(str((n / num_testruns) * 100) + "%")
+            print("Training "+ str((n / num_testruns) * 100) + "%")
 
     return W
 
