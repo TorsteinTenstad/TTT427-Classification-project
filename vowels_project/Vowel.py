@@ -45,31 +45,6 @@ class Vowel:
         for point in self.samples:
             ax.scatter(point[0], point[1], point[2], color=global_constants.colors[self.vowel_type])
 
-    def plotGaussian(self, a12, a13, a23, a1, a2, a3):
-
-        f1 = []
-        f2 = []
-        f3 = []
-
-        for point in self.samples:
-            if (point[0] != 0) and (point[1] != 0) and (point[2] != 0):
-                f1.append(point[0])
-                f2.append(point[1])
-                f3.append(point[2])
-
-        sns.kdeplot(f1, f2, kernel='gau', shade=False, shade_lowest=False, n_levels=2, ax=a12, color=global_constants.colors[self.vowel_type])
-        sns.kdeplot(f1, f3, kernel='gau', shade=False, shade_lowest=False, n_levels=2, ax=a13, color=global_constants.colors[self.vowel_type])
-        sns.kdeplot(f2, f3, kernel='gau', shade=False, shade_lowest=False, n_levels=2, ax=a23, color=global_constants.colors[self.vowel_type])
-
-        sns.scatterplot(f1, f2, ax=a12, color=global_constants.colors[self.vowel_type])
-        sns.scatterplot(f1, f3, ax=a13, color=global_constants.colors[self.vowel_type])
-        sns.scatterplot(f2, f3, ax=a23, color=global_constants.colors[self.vowel_type])
-
-        sns.kdeplot(f1, kernel='gau', shade=False, ax=a1, color=global_constants.colors[self.vowel_type])
-        sns.kdeplot(f2, kernel='gau', shade=False, ax=a2, color=global_constants.colors[self.vowel_type])
-        sns.kdeplot(f3, kernel='gau', shade=False, ax=a3, color=global_constants.colors[self.vowel_type])
-
-
     def calc_probability(self, point):
         if self.multivariate_normal is None:
             self.calc_multivariate_normal()
