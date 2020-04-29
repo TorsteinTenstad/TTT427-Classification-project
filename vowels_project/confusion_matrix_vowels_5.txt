@@ -1,0 +1,24 @@
+\begin{table*}
+\centering
+\caption{Confustion matrix for variant 5}
+\label{tab:confusion matrix, variant 5}
+\begin{tabular}{|l|l|l|l|l|l|l|l|l|l|l|l|l|l|} \hline
+&    & \multicolumn{12}{c|}{True value} \\ \hline
+&    & ae & ah & aw & eh & er & ei & ih & iy & oa & oo & uh & uw \\ \hline
+\parbox[t]{2mm}{\multirow{12}{*}{\rotatebox[origin=c]{90}{Predicted value}}}
+& ae & 45 &  0 &  0 & 16 &  1 &  6 &  0 &  0 &  0 &  0 &  0 &  0 \\ \cline{2-14}
+& ah &  0 & 47 & 11 &  3 &  0 &  0 &  0 &  0 &  1 &  0 &  7 &  0 \\ \cline{2-14}
+& aw &  0 &  9 & 46 &  0 &  0 &  0 &  0 &  0 &  1 &  0 &  6 &  0 \\ \cline{2-14}
+& eh &  9 &  1 &  0 & 43 &  1 &  1 &  1 &  0 &  0 &  0 &  1 &  1 \\ \cline{2-14}
+& er &  1 &  0 &  0 &  1 & 60 &  0 &  0 &  0 &  0 &  0 &  0 &  0 \\ \cline{2-14}
+& ei &  8 &  0 &  0 &  0 &  1 & 39 & 13 &  5 &  0 &  0 &  0 &  1 \\ \cline{2-14}
+& ih &  0 &  0 &  0 &  0 &  0 & 14 & 45 &  3 &  0 &  0 &  0 &  0 \\ \cline{2-14}
+& iy &  0 &  0 &  0 &  0 &  0 &  3 &  4 & 55 &  0 &  0 &  0 &  0 \\ \cline{2-14}
+& oa &  0 &  0 &  2 &  0 &  0 &  0 &  0 &  0 & 45 &  4 &  3 &  3 \\ \cline{2-14}
+& oo &  0 &  0 &  0 &  0 &  0 &  0 &  0 &  0 &  8 & 44 &  5 & 16 \\ \cline{2-14}
+& uh &  0 &  6 &  4 &  0 &  0 &  0 &  0 &  0 &  4 &  2 & 41 &  0 \\ \cline{2-14}
+& uw &  0 &  0 &  0 &  0 &  0 &  0 &  0 &  0 &  4 & 13 &  0 & 42 \\ \hline
+\hline
+\multicolumn{2}{|c|}{Error rate}&28\% &25\% &26\% &31\% &4\% &38\% &28\% &12\% &28\% &30\% &34\% &33\% \\ \hline
+\end{tabular}
+\end{table*}

@@ -1,65 +1,54 @@
-# ====================================================================
-#       File format
-# ====================================================================
-# Filenames:
-# character 1:     m=man, w=woman, b=boy, g=girl
-# characters 2-3:  talker number
-# characters 4-5:  vowel (ae="had", ah="hod", aw="hawed", eh="head", er="heard",
-#                        ei="haid", ih="hid", iy="heed", oa=/o/ as in "boat",
-#                        oo="hood", uh="hud", uw="who'd")
-#
-# col1:  filename, #col2:  duration in msec, #col3:  f0 at "steady state", #col4:  F1 at "steady state", #col5:  F2
-# at "steady state" col6:  F3 at "steady state", #col7:  F4 at "steady state", #col8:  F1 at 20% of vowel duration,
-# #col9:  F2 at 20% of vowel duration col10: F3 at 20% of vowel duration, #col11: F1 at 50% of vowel duration,
-# #col12: F2 at 50% of vowel duration, #col13: F3 at 50% of vowel duration col14: F1 at 80% of vowel duration,
-# #col15: F2 at 80% of vowel duration, #col16: F3 at 80% of vowel duration
-#
-# Note: An entry of zero means that the formant was not measurable.
 from Dataset import Dataset
-import sound_processing
-
-
-def get_raw_data_from_dat_file(file):
-    return [[int(i) if i.isnumeric() else i for i in line.strip().split()] for line in open(file).readlines()][1:]
-
-
-def get_raw_data_from_wav_analysis(folder):
-    raw_data = []
-    for subfolder in ['men', 'women', 'kids']:
-        raw_data = raw_data + sound_processing.get_raw_feature_data(folder + '/' + subfolder)
-    return raw_data
+from Classifier import Classifier
+import confusion_matrix_to_latex_table
+import global_constants
+import get_raw_data
 
 
 def main():
-    # Load the raw data:
-    raw_data = get_raw_data_from_dat_file('samples/vowdata.dat')
-    # raw_data = get_raw_data_from_wav_analysis('samples')
+    # Load the raw data from dat file:
+    raw_data = get_raw_data.from_dat_file('samples/vowdata.dat', duration_mode=2)
+
+    # Normalize the raw data:
+    raw_data = get_raw_data.normalize(raw_data)
 
     # Add a given amount of samples from the raw data into a training set:
-    training_set = Dataset(raw_data, samples_to_take_for_each_group={'m': 25, 'w': 25, 'b': 15, 'g': 11})
+    training_set = Dataset(raw_data,
+                           samples_to_take_for_each_group={'m': 25, 'w': 25, 'b': 15, 'g': 11})
+
+    # Plot training set:
+    training_set.plot()
 
     # Add the rest of the raw data into a testing set:
     testing_set = Dataset(raw_data)
 
-    # Train a classifier based on the training set:
-    training_set.train()
+    # Define the parameters of the classifier variants:
+    classifier_variants = [[1, 1, 'diag'], [2, 1, 'full'], [3, 2, 'full'], [4, 3, 'full'],
+                           [5, 4, 'full']]
 
-    # Classify the testing set with the trained classifier:
-    false_classification_rate, confusion_matrix = training_set.classify_test_set(testing_set)
+    for variant in classifier_variants:
+        # Create a classifier:
+        classifier = Classifier(n_components=variant[1], covariance_type=variant[2])
 
-    # Print results:
-    print('False classification rate:', int(100 * false_classification_rate), '%')
+        # Train a classifier based on the training set:
+        classifier.train(training_set.data)
 
-    # Constrain the classifier to use diagonal covariance matrices:
-    training_set.make_all_covariance_matrices_diagonal()
+        # Classify the testing set with the trained classifier:
+        false_classification_rate, confusion_matrix = classifier.classify(testing_set.data)
 
-    # Train the classifier with this constraint:
-    training_set.train()
+        # Print results:
+        print('Variant ' + str(variant[0]))
+        print('False classification rate:', int(100 * false_classification_rate), '%')
+        print('Confusion matrix:\n', confusion_matrix, '\n')
 
-    # Classify the testing set with the new classifier:
-    false_classification_rate, confusion_matrix = training_set.classify_test_set(testing_set)
-
-    # Print results:
-    print('False classification rate with diagonal covariance matrices:', int(100 * false_classification_rate), '%')
+        # Format confusion matrix for latex:
+        confusion_matrix_to_latex_table.to_latex_table(confusion_matrix,
+                                                       global_constants.vowel_types,
+                                                       'confusion_matrix_vowels_' + str(
+                                                           variant[0]) + '.txt',
+                                                       table_caption='Confustion matrix for variant ' + str(
+                                                           variant[0]) + '',
+                                                       table_label='tab:confusion matrix, variant ' + str(
+                                                           variant[0]))
 
 main()

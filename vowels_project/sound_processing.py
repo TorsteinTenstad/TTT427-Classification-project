@@ -58,7 +58,12 @@ def get_raw_feature_data(folder_with_sound_samples):
     files = [f for f in listdir(folder_with_sound_samples) if isfile(join(folder_with_sound_samples, f))]
     points = []
     for file in files:
-        point = list(get_point_in_feature_space(folder_with_sound_samples+'/'+file))
-        point.insert(0, file)
-        points.append(point)
+        points.append([file[0:5], get_point_in_feature_space(folder_with_sound_samples+'/'+file)])
     return points
+
+
+def get_raw_feature_data_all(folder):
+    raw_data = []
+    for subfolder in ['men', 'women', 'kids']:
+        raw_data = raw_data + get_raw_feature_data(folder + '/' + subfolder)
+    return raw_data
