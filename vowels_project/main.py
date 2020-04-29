@@ -41,14 +41,5 @@ def main():
         print('False classification rate:', int(100 * false_classification_rate), '%')
         print('Confusion matrix:\n', confusion_matrix, '\n')
 
-        # Format confusion matrix for latex:
-        confusion_matrix_to_latex_table.to_latex_table(confusion_matrix,
-                                                       global_constants.vowel_types,
-                                                       'confusion_matrix_vowels_' + str(
-                                                           variant[0]) + '.txt',
-                                                       table_caption='Confustion matrix for variant ' + str(
-                                                           variant[0]) + '',
-                                                       table_label='tab:confusion matrix, variant ' + str(
-                                                           variant[0]))
 
 main()
